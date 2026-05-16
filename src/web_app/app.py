@@ -37,6 +37,25 @@ with tab_chat:
                 )
             st.markdown(response)
             st.caption(f"Agents used: {agents_used}")
+            # Quality check for content
+            if agents_used and "blog" in agents_used:
+                from src.utils.guardrails import validate_output_quality
+                quality = validate_output_quality(response, "blog")
+                if quality["issues"]:
+                    with st.expander(f"📊 Quality Score: {quality['score']}/100"):
+                        for issue in quality["issues"]:
+                            st.warning(issue)
+                else:
+                    st.caption(f"📊 Quality Score: {quality['score']}/100 ✅")
+            elif agents_used and "linkedin" in agents_used:
+                from src.utils.guardrails import validate_output_quality
+                quality = validate_output_quality(response, "linkedin")
+                if quality["issues"]:
+                    with st.expander(f"📊 Quality Score: {quality['score']}/100"):
+                        for issue in quality["issues"]:
+                            st.warning(issue)
+                else:
+                    st.caption(f"📊 Quality Score: {quality['score']}/100 ✅")
 
             # Store the last agent's content for editor (the final content piece)
             parts = response.split("\n\n---\n\n")

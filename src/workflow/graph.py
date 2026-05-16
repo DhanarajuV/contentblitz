@@ -7,7 +7,7 @@ from src.agents.blog_writer import BlogWriterAgent
 from src.agents.linkedin_writer import LinkedInWriterAgent
 from src.agents.image_agent import ImageAgent
 from src.agents.content_strategist import ContentStrategistAgent
-
+from src.utils.guardrails import validate_input, check_content_safety
 
 class AgentState(TypedDict):
     user_message: str
@@ -77,12 +77,27 @@ def chat(user_message: str, chat_history: list = None) -> tuple[str, str, list]:
     if chat_history is None:
         chat_history = []
 
+    # Input validation
+    is_valid, error = validate_input(user_message)
+    if not is_valid:
+        return f"⚠️ {error}", "guardrail", chat_history
+
+    # Input safety check
+    is_safe, reason = check_content_safety(user_message)
+    if not is_safe:
+        return f"⚠️ {reason}", "guardrail", chat_history
+
     result = app.invoke({
         "user_message": user_message,
         "chat_history": chat_history,
         "agent_types": [],
         "response": "",
     })
+
+    # Output safety check
+    is_safe, reason = check_content_safety(result["response"])
+    if not is_safe:
+        return f"⚠️ Content was filtered for safety. Please try a different topic.", "guardrail", chat_history
 
     agent_label = ", ".join(result["agent_types"])
     return result["response"], agent_label, result["chat_history"]
