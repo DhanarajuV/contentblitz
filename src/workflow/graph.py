@@ -97,6 +97,7 @@ def chat(user_message: str, chat_history: list = None) -> tuple[str, str, list]:
     # Output safety check
     is_safe, reason = check_content_safety(result["response"])
     if not is_safe:
+        print(f"DEBUG guardrail: {reason}")  # logs the matched word
         return f"⚠️ Content was filtered for safety. Please try a different topic.", "guardrail", chat_history
 
     agent_label = ", ".join(result["agent_types"])

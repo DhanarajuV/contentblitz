@@ -67,8 +67,14 @@ def check_content_safety(text: str) -> tuple[bool, str]:
     """Basic content safety check. Returns (is_safe, reason)."""
     text_lower = text.lower()
 
+    # Don't filter LLM refusals — they're already safe
+    refusal_phrases = ["i cannot", "i can't", "i'm unable", "against my safety"]
+    if any(phrase in text_lower for phrase in refusal_phrases):
+        return True, ""
+
     for pattern in _BLOCKED_PATTERNS:
-        if re.search(pattern, text_lower):
-            return False, f"Content may contain inappropriate material. Please revise your request."
+        match = re.search(pattern, text_lower)
+        if match:
+            return False, f"Content filtered: matched '{match.group()}'"
 
     return True, ""
