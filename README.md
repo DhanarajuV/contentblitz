@@ -1,3 +1,11 @@
+---
+title: ContentBlitz
+emoji: ✍️
+colorFrom: blue
+colorTo: purple
+sdk: docker
+app_port: 7860
+---
 # ✍️ ContentBlitz — AI Content Marketing Assistant
 
 ContentBlitz is a multi-agent AI-powered content marketing assistant that helps creators produce research-backed blogs, LinkedIn posts, and images through natural conversation. Built with LangGraph, Google Gemini, Tavily, and DALL-E.
